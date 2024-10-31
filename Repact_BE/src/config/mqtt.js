@@ -1,8 +1,8 @@
-const mqtt = require('mqtt');
+import mqtt from 'mqtt';
 
 const mqttBrokerUrl = 'mqtt://localhost:1883';
-const mqttUser = 'cong';
-const mqttPassword = '184';
+const mqttUser = 'khiem';
+const mqttPassword = '123';
 
 const mqttClient = mqtt.connect(mqttBrokerUrl, {
   username: mqttUser,
@@ -11,6 +11,7 @@ const mqttClient = mqtt.connect(mqttBrokerUrl, {
 
 mqttClient.on('connect', () => {
   console.log('Connected to MQTT Broker');
+  
   // Đăng ký chủ đề MQTT
   mqttClient.subscribe('data/sensor', (err) => {
     if (err) {
@@ -33,4 +34,4 @@ mqttClient.on('error', (err) => {
   console.error('MQTT Client Error:', err);
 });
 
-module.exports = mqttClient;
+export default mqttClient;

@@ -1,19 +1,20 @@
-const Data_Sensor = require('../models/Data_Sensor');
-const Data_Device = require('../models/Data_Device');
-const checkToken = require('../app/controllers/middlewares/checkToken');
-const Device = require('../models/Device');
+import Data_Sensor from '../models/Data_Sensor';
+import Data_Device from '../models/Data_Device';
+import checkToken from '../app/controllers/middlewares/checkToken';
+import Device from '../models/Device';
 
-const EventEmitter = require('events');
+import EventEmitter from 'events';
+import mqttClient from '../../config/mqtt';
+
 const eventEmitter = new EventEmitter();
 
-const mqttClient = require('../../config/mqtt');
-var data = {
+const data = {
     "data/sensor": null,
     "data/led": null,
     "control/led": null,
-}
+};
 
-eventEmitter.on('control', ({_controlData, requestId}) => {
+eventEmitter.on('control', ({ _controlData, requestId }) => {
     data["control/led"] = _controlData;
     let controlData = {};
 
@@ -28,7 +29,7 @@ eventEmitter.on('control', ({_controlData, requestId}) => {
 
 mqttClient.on('message', (topic, message) => {
     console.log(message.toString());
-    const {requestId, ...messageData } = JSON.parse(message.toString());
+    const { requestId, ...messageData } = JSON.parse(message.toString());
 
     data[topic] = {
         ...data[topic],
@@ -40,7 +41,7 @@ mqttClient.on('message', (topic, message) => {
             Device.update({
                 status: data['data/led'][id],
             },
-                { where: { id: id } });
+            { where: { id: id } });
         });
 
         if (data['control/led']) {
@@ -74,4 +75,4 @@ setInterval(() => {
     }
 }, 60000);
 
-module.exports = { data, eventEmitter };
+export { data, eventEmitter };

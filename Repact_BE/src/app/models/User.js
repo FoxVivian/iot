@@ -1,9 +1,9 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../../config/database.js';
 
 // Định nghĩa model User
 const User = sequelize.define('User', {
-    id: {
+  id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
@@ -29,4 +29,4 @@ const User = sequelize.define('User', {
   timestamps: false    // Bỏ qua các trường createdAt, updatedAt
 });
 
-module.exports = User;
+export default User;

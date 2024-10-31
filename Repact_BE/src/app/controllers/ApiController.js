@@ -1,16 +1,16 @@
-const User = require('../../models/User');  // Model User
-const Device = require('../../models/Device');  // Model Device
-const Sensor = require('../../models/Sensor');  // Model Sensor
-const Data_Sensor = require('../../models/Data_Sensor'); // Model Data Sensor
-const Data_Device = require('../../models/Data_Device'); // Model Data Device
-const jwt = require('jsonwebtoken');
-const { Sequelize, Op } = require('sequelize'); // Model
+import { findAll, findOne } from '../models/User.js';  // Model User
+import Device, { findAll as _findAll } from '../models/Device.js';  // Model Device
+import { findAll as __findAll } from '../models/Sensor.js';  // Model Sensor
+import { findAndCountAll } from '../models/Data_Sensor.js'; // Model Data Sensor
+import { findAndCountAll as _findAndCountAll } from '../models/Data_Device.js'; // Model Data Device
+import { sign } from 'jsonwebtoken';
+import { Sequelize, Op } from 'sequelize'; // Model
 
 class ApiController {
     // [GET] /api/data/users
     async users(req, res, next) {
         try {
-            const users = await User.findAll({
+            const users = await findAll({
                 attributes: { exclude: ['username', 'password'] } // Loại bỏ trường password
             });
             res.json(users);
@@ -22,7 +22,7 @@ class ApiController {
     // [GET] /api/data/devices
     async devices(req, res, next) {
         try {
-            const devices = await Device.findAll();
+            const devices = await _findAll();
             res.json(devices);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -32,7 +32,7 @@ class ApiController {
     // [GET] /api/data/sensors
     async sensors(req, res, next) {
         try {
-            const sensors = await Sensor.findAll();
+            const sensors = await __findAll();
             res.json(sensors);
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -63,7 +63,7 @@ class ApiController {
                 };
             }
 
-            const { count, rows } = await Data_Sensor.findAndCountAll({
+            const { count, rows } = await findAndCountAll({
                 where: whereClause,
                 limit: parseInt(pageSize, 10), // Giới hạn số lượng kết quả
                 offset: parseInt(offset, 10), // Bỏ qua số lượng kết quả trước đó
@@ -105,7 +105,7 @@ class ApiController {
                 };
             }
 
-            const { count, rows } = await Data_Device.findAndCountAll({
+            const { count, rows } = await _findAndCountAll({
                 where: whereClause,
                 limit: parseInt(pageSize, 10), // Giới hạn số lượng kết quả
                 offset: parseInt(offset, 10), // Bỏ qua số lượng kết quả trước đó
@@ -145,7 +145,7 @@ class ApiController {
 
         try {
             // Tìm người dùng trong cơ sở dữ liệu
-            const user = await User.findOne({ where: { username } });
+            const user = await findOne({ where: { username } });
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
@@ -158,7 +158,7 @@ class ApiController {
             }
 
             // Tạo JWT token
-            const token = jwt.sign({ id: user.id }, 'alittledaisy_token', { expiresIn: '24h' }); // Nên sử dụng biến môi trường cho secret key
+            const token = sign({ id: user.id }, 'alittledaisy_token', { expiresIn: '24h' }); // Nên sử dụng biến môi trường cho secret key
 
             res.status(200).json({
                 token,
@@ -172,4 +172,4 @@ class ApiController {
 
 }
 
-module.exports = new ApiController();
+export default new ApiController();

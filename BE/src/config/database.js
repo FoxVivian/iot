@@ -6,6 +6,13 @@ const sequelize = new Sequelize('iot', 'root', '1234', {
   dialect: 'mysql'
 });
 
+
+// const sequelize = new Sequelize('iot', 'root', '1234', {
+//   host: '192.168.96.205',
+//   dialect: 'mysql'
+// });
+
+
 // Kiểm tra kết nối
 sequelize.authenticate()
   .then(() => console.log('Kết nối thành công đến MySQL với Sequelize'))

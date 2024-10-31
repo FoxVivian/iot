@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const User = require('../../../models/User'); 
+import jwt from 'jsonwebtoken';
+import User from '../../models/User.js';
 
 const checkToken = (req, res, next) => {
     const token = req.body.token; // Lấy token từ body
@@ -17,13 +17,12 @@ const checkToken = (req, res, next) => {
         // Attach user data to request
         User.findByPk(decoded.id).then((user) => {
             req.userId = user.id;
+            next();  // Chuyển next vào trong then để đảm bảo nó chỉ được gọi khi user được tìm thấy
         }).catch((err) => {
             console.error(err);
             res.status(500).json({ message: 'Internal server error' });
         });
-        
-        next();
     });
 };
 
-module.exports = checkToken;
+export default checkToken;

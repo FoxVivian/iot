@@ -20,7 +20,7 @@ app.use(session({
     cookie: { maxAge: 6000 * 5 } // Thời gian sống của session (ở đây là 5 phút)
 }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
