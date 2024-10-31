@@ -1,14 +1,11 @@
-import { Sequelize } from 'sequelize';
+const mongoose = require('mongoose');
 
-// Thiết lập kết nối với cơ sở dữ liệu MySQL
-const sequelize = new Sequelize('iot', 'root', '1234', {
-  host: 'localhost',
-  dialect: 'mysql'
-});
+// MongoDB connection URL
+const DB_URL = "mongodb+srv://neiryaeris:Fox01659943581@lab.7o83ceo.mongodb.net/?retryWrites=true&w=majority&appName=Lab";
 
-// Kiểm tra kết nối
-sequelize.authenticate()
-  .then(() => console.log('Kết nối thành công đến MySQL với Sequelize'))
-  .catch(err => console.error('Lỗi kết nối MySQL:', err));
+// Connect to MongoDB
+mongoose.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Kết nối thành công đến MongoDB'))
+  .catch(err => console.error('Lỗi kết nối MongoDB:', err));
 
-export default sequelize;
+module.exports = mongoose;

@@ -1,48 +1,32 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../../config/database.js';
-import Device from './Device.js';
-import User from './User.js';
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const Data_Device = sequelize.define('Data_Device', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
+// Define Data_Device Schema
+const dataDeviceSchema = new Schema({
   device_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Device,  // Liên kết với bảng Device
-      key: 'id'
-    }
+    type: Schema.Types.ObjectId,  // Reference to Device model
+    ref: 'Device',
+    required: true
   },
   action: {
-    type: DataTypes.INTEGER,
-    allowNull: false
+    type: Number,
+    required: true
   },
   user_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: User,  // Liên kết với bảng User
-      key: 'id'
-    }
+    type: Schema.Types.ObjectId,  // Reference to User model
+    ref: 'User',
+    required: true
   },
   time: {
-    type: DataTypes.TIME,
-  },
+    type: String,  // Store time as a string in 'HH:mm:ss' format or as a Date if including the date
+    required: false
+  }
 }, {
-  tableName: 'data_devices',  // Tên bảng trong cơ sở dữ liệu
-  timestamps: false    // Bỏ qua các trường createdAt, updatedAt
+  collection: 'data_devices', // Optional: specify collection name in MongoDB
+  timestamps: false           // No automatic createdAt/updatedAt fields
 });
 
-// Thiết lập quan hệ 1-nhiều giữa Device và Data_Device
-Device.hasMany(Data_Device, { foreignKey: 'device_id' });
-Data_Device.belongsTo(Device, { foreignKey: 'device_id', as: 'device' });
+// Create Data_Device model
+const Data_Device = mongoose.model('Data_Device', dataDeviceSchema);
 
-// Thiết lập quan hệ 1-nhiều giữa User và Data_Device
-User.hasMany(Data_Device, { foreignKey: 'user_id' });
-Data_Device.belongsTo(User, { foreignKey: 'user_id' });
-
-export default Data_Device;
+module.exports = Data_Device;

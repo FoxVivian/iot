@@ -1,29 +1,30 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../../config/database.js';
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const Data_Sensor = sequelize.define('Data_Sensor', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true
-  },
+// Define Data_Sensor Schema
+const dataSensorSchema = new Schema({
   temperature: {
-    type: DataTypes.FLOAT,
-    allowNull: false
+    type: Number,
+    required: true
   },
   humidity: {
-    type: DataTypes.FLOAT,
-    allowNull: false
+    type: Number,
+    required: true
   },
   light: {
-    type: DataTypes.INTEGER,
-    allowNull: false
+    type: Number,
+    required: true
   },
   time: {
-    type: DataTypes.TIME,
-  },
+    type: String,  // Storing time as a string in MongoDB (e.g., 'HH:mm:ss')
+    required: false
+  }
 }, {
-  tableName: 'data_sensors',  // Tên bảng trong cơ sở dữ liệu
-  timestamps: false    // Bỏ qua các trường createdAt, updatedAt
+  collection: 'data_sensors',  // Optional: specify the collection name in MongoDB
+  timestamps: false            // No automatic createdAt/updatedAt fields
 });
 
-export default Data_Sensor;
+// Create Data_Sensor model
+const Data_Sensor = mongoose.model('Data_Sensor', dataSensorSchema);
+
+module.exports = Data_Sensor;

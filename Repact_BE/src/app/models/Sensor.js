@@ -1,20 +1,18 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../../config/database.js';
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-// Định nghĩa model Sensor
-const Sensor = sequelize.define('Sensor', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
+// Define Sensor Schema
+const sensorSchema = new Schema({
   sensor_name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
+    type: String,
+    required: true
+  }
 }, {
-  tableName: 'sensors',  // Tên bảng trong cơ sở dữ liệu
-  timestamps: false    // Bỏ qua các trường createdAt, updatedAt
+  collection: 'sensors', // Optional: specify the collection name in MongoDB
+  timestamps: false       // No automatic createdAt/updatedAt fields
 });
 
-export default Sensor;
+// Create Sensor model
+const Sensor = mongoose.model('Sensor', sensorSchema);
+
+module.exports = Sensor;

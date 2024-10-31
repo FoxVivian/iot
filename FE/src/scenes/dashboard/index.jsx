@@ -315,7 +315,7 @@ const Dashboard = ({ dataSensors, dataDevices, sendControlData }) => {
                 variant="h5"
                 fontWeight="600"
               >
-                LED 3 - lights
+                LED 3 - Lights
               </Typography>
             </Box>
 

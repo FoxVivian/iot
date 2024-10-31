@@ -1,24 +1,22 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../../config/database.js';
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-// Định nghĩa model Device
-const Device = sequelize.define('Device', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
+// Define Device Schema
+const deviceSchema = new Schema({
   device_name: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: String,
+    required: true
   },
   status: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
+    type: Number,
+    required: true
+  }
 }, {
-  tableName: 'devices',  // Tên bảng trong cơ sở dữ liệu
-  timestamps: false    // Bỏ qua các trường createdAt, updatedAt
+  collection: 'devices', // Optional: specify the collection name in MongoDB
+  timestamps: false       // No automatic createdAt/updatedAt fields
 });
 
-export default Device;
+// Create Device model
+const Device = mongoose.model('Device', deviceSchema);
+
+module.exports = Device;

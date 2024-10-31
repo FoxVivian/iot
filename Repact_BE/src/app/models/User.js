@@ -1,32 +1,30 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../../config/database.js';
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-// Định nghĩa model User
-const User = sequelize.define('User', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
+// Define User Schema
+const userSchema = new Schema({
   username: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: String,
+    required: true
   },
   student_id: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: String,
+    required: true
   },
   password: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: String,
+    required: true
   },
   name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
+    type: String,
+    required: true
+  }
 }, {
-  tableName: 'users',  // Tên bảng trong cơ sở dữ liệu
-  timestamps: false    // Bỏ qua các trường createdAt, updatedAt
+  collection: 'users',  // Optional: define collection name in MongoDB
+  timestamps: false     // No automatic createdAt/updatedAt fields
 });
 
-export default User;
+// Create User model
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;

@@ -1,13 +1,12 @@
-// import User from '../models/User';  // Model User
-// import Device from '../models/Device';  // Model Device
-// import Sensor from '../models/Sensor';  // Model Sensor
-// import Data_Sensor from '../models/Data_Sensor'; // Model Data Sensor
-// import Data_Device from '../models/Data_Device'; // Model Data Device
-// import jwt from 'jsonwebtoken';
-import { Sequelize, Op } from 'sequelize';
-import { v4 as uuidv4 } from 'uuid';
-import { data, eventEmitter } from '../../services/mqttService.js';
-
+// const User = require('../models/User');  // Model User
+// const Device = require('../models/Device');  // Model Device
+// const Sensor = require('../models/Sensor');  // Model Sensor
+// const Data_Sensor = require('../models/Data_Sensor'); // Model Data Sensor
+// const Data_Device = require('../models/Data_Device'); // Model Data Device
+// const jwt = require('jsonwebtoken');
+// const { Sequelize, Op } = require('sequelize'); // Model
+const { v4: uuidv4 } = require('uuid');
+const { data, eventEmitter } = require('../services/mqttService');
 class RealTimeApiController {
     // [GET] /api/data/data_sensors
     data_sensors(req, res, next) {
@@ -32,16 +31,17 @@ class RealTimeApiController {
         });
     
         if (Object.keys(_controlData).length > 0) {
-            eventEmitter.emit('control', { _controlData, requestId });
+            eventEmitter.emit('control', { _controlData, requestId});
     
             eventEmitter.once(`data/${requestId}`, (dataDevices) => {
                 currentLedData = { ...dataDevices };  // Bản sao mới của dataDevices
                 return res.status(200).json(currentLedData);
             });
-        } else {
+        } 
+        else {
             return res.status(200).json(currentLedData);
         }
     }
 }
 
-export default new RealTimeApiController();
+module.exports = new RealTimeApiController();
