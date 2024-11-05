@@ -11,8 +11,7 @@ const mqttClient = mqtt.connect(mqttBrokerUrl, {
 
 mqttClient.on('connect', () => {
   console.log('Connected to MQTT Broker');
-  
-  // Subscribe to sensor data topic
+  // Đăng ký chủ đề MQTT
   mqttClient.subscribe('data/sensor', (err) => {
     if (err) {
       console.error('Failed to subscribe to topic: data/sensor');
@@ -21,21 +20,11 @@ mqttClient.on('connect', () => {
     }
   });
 
-  // Subscribe to LED data topic
   mqttClient.subscribe('data/led', (err) => {
     if (err) {
       console.error('Failed to subscribe to topic: data/led');
     } else {
       console.log('Subscribed to topic: data/led');
-    }
-  });
-
-  // Subscribe to Servo data topic
-  mqttClient.subscribe('data/servo', (err) => {
-    if (err) {
-      console.error('Failed to subscribe to topic: data/servo');
-    } else {
-      console.log('Subscribed to topic: data/servo');
     }
   });
 });
