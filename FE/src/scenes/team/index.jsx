@@ -31,7 +31,7 @@ const Team = () => {
         const fetchData = async () => {
             try {
                 const params = { page: page + 1, pageSize, searchText }; // Cộng 1 vì API thường bắt đầu từ 1
-                const response = await axios.get(`http://localhost:3000/api/data/data_sensors`, { params });
+                const response = await axios.get(`http://localhost:5000/api/data/data_sensors`, { params });
                 setData(response.data.items); 
                 setTotalRows(response.data.total); 
             } catch (error) {

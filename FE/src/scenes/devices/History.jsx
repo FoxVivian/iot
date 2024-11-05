@@ -58,7 +58,7 @@ const History = () => {
                     params.startDate = startDate;
                     params.endDate = endDate;
                 } 
-                const response = await axios.get(`http://localhost:3000/api/data/data_devices`, {
+                const response = await axios.get(`http://localhost:5000/api/data/data_devices`, {
                     params 
                 });
                 setData(response.data.items);
