@@ -14,23 +14,44 @@ const data = {
     "data/sensor": null,
     "data/led": null,
     "control/led": null,
+    "data/servo": null,
+    "control/servo": null,
 };
 
 eventEmitter.on('control', ({ _controlData, requestId }) => {
-    data["control/led"] = _controlData;
-    let controlData = {};
+    // Separate control data for LEDs and Servos
+    const ledControlData = {};
+    const servoControlData = {};
 
+    // Distribute control data to either LED or Servo
     Object.keys(_controlData).forEach((key) => {
-        controlData[key] = _controlData[key]; // lưu controlData vào bản sao
+        if (key.startsWith('led/')) {
+            ledControlData[key.replace('led/', '')] = _controlData[key];
+        } else if (key.startsWith('servo/')) {
+            servoControlData[key.replace('servo/', '')] = _controlData[key];
+        }
     });
-    controlData["requestId"] = requestId;
 
-    console.log("hehehe", JSON.stringify(controlData));
-    mqttClient.publish('control/led', JSON.stringify(controlData));
+    data["control/led"] = ledControlData;
+    data["control/servo"] = servoControlData;
+
+    // Publish control data for LEDs
+    if (Object.keys(ledControlData).length > 0) {
+        const controlData = { ...ledControlData, requestId };
+        console.log("LED Control Data:", JSON.stringify(controlData));
+        mqttClient.publish('control/led', JSON.stringify(controlData));
+    }
+
+    // Publish control data for Servos
+    if (Object.keys(servoControlData).length > 0) {
+        const controlData = { ...servoControlData, requestId };
+        console.log("Servo Control Data:", JSON.stringify(controlData));
+        mqttClient.publish('control/servo', JSON.stringify(controlData));
+    }
 });
 
 mqttClient.on('message', (topic, message) => {
-    console.log(message.toString());
+    console.log("Message received on topic:", topic);
     const { requestId, ...messageData } = JSON.parse(message.toString());
 
     data[topic] = {
@@ -38,32 +59,38 @@ mqttClient.on('message', (topic, message) => {
         ...messageData,
     };
 
-    if (topic === "data/led") {
-        Object.keys(data['data/led']).forEach((id) => { // Lưu trạng thái devices
+    if (topic === "data/led" || topic === "data/servo") {
+        const deviceType = topic === "data/led" ? "LED" : "Servo";
+
+        Object.keys(data[topic]).forEach((id) => {
             Device.update({
-                status: data['data/led'][id],
+                status: data[topic][id],
             },
             { where: { id: id } });
         });
 
-        if (data['control/led']) {
-            Object.keys(data['control/led']).forEach((key) => {
+        const controlKey = topic === "data/led" ? "control/led" : "control/servo";
+        if (data[controlKey]) {
+            Object.keys(data[controlKey]).forEach((key) => {
                 Data_Device.create({
-                    device_id: key, // id của thiết bị
-                    action: data['control/led'][key], // action tương ứng với id
+                    device_id: key,
+                    action: data[controlKey][key],
                     user_id: 1
                 });
             });
-            data['control/led'] = null;
+            data[controlKey] = null;
         }
-        eventEmitter.emit(`data/${requestId}`, data['data/led']); // truyền sang kênh data cho realtimeAPI 
+        eventEmitter.emit(`data/${requestId}`, data[topic]);
     }
 
     if (!data["data/led"]) {
-        mqttClient.publish('control/led', null); // gọi để lấy led data ban đầu 
+        mqttClient.publish('control/led', null);
+    }
+    if (!data["data/servo"]) {
+        mqttClient.publish('control/servo', null);
     }
 
-    console.log(data);
+    console.log("Current Data:", data);
 });
 
 setInterval(() => {
@@ -73,7 +100,7 @@ setInterval(() => {
             humidity: data["data/sensor"].h,
             light: data["data/sensor"].l,
         });
-        console.log("saved data sensor to DB");
+        console.log("Saved data sensor to DB");
     }
 }, 60000);
 
