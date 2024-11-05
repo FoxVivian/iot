@@ -8,4 +8,4 @@ mongoose.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Kết nối thành công đến MongoDB'))
   .catch(err => console.error('Lỗi kết nối MongoDB:', err));
 
-module.exports = mongoose;
+module.exports = mongoose;d

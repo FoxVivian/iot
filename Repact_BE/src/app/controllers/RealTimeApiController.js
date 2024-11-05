@@ -7,6 +7,7 @@
 // const { Sequelize, Op } = require('sequelize'); // Model
 const { v4: uuidv4 } = require('uuid');
 const { data, eventEmitter } = require('../services/mqttService');
+
 class RealTimeApiController {
     // [GET] /api/data/data_sensors
     data_sensors(req, res, next) {
@@ -14,7 +15,10 @@ class RealTimeApiController {
     }
 
     data_devices(req, res, next) {
-        return res.status(200).json(data["data/led"]);
+        return res.status(200).json({
+            led: data["data/led"],
+            servo: data["data/servo"]
+        });
     }
 
     // [POST] /api/control/data_sensors
@@ -22,24 +26,40 @@ class RealTimeApiController {
         const controlData = req.body;
         let _controlData = {};
         let currentLedData = { ...data["data/led"] };
-        const requestId = uuidv4(); // Tạo ID duy nhất cho mỗi request
+        let currentServoData = { ...data["data/servo"] };
+        const requestId = uuidv4(); // Generate a unique ID for each request
     
-        Object.keys(controlData).forEach((key) => {
-            if (controlData[key] !== currentLedData[key] && currentLedData[key] !== undefined) {
-                _controlData[key] = controlData[key];
+        // Check for LED control data
+        Object.keys(controlData.led || {}).forEach((key) => {
+            if (controlData.led[key] !== currentLedData[key] && currentLedData[key] !== undefined) {
+                _controlData[`led/${key}`] = controlData.led[key];
+            }
+        });
+
+        // Check for Servo control data
+        Object.keys(controlData.servo || {}).forEach((key) => {
+            if (controlData.servo[key] !== currentServoData[key] && currentServoData[key] !== undefined) {
+                _controlData[`servo/${key}`] = controlData.servo[key];
             }
         });
     
         if (Object.keys(_controlData).length > 0) {
-            eventEmitter.emit('control', { _controlData, requestId});
+            eventEmitter.emit('control', { _controlData, requestId });
     
             eventEmitter.once(`data/${requestId}`, (dataDevices) => {
-                currentLedData = { ...dataDevices };  // Bản sao mới của dataDevices
-                return res.status(200).json(currentLedData);
+                currentLedData = { ...dataDevices.led };  // New copy of LED data
+                currentServoData = { ...dataDevices.servo };  // New copy of Servo data
+                return res.status(200).json({
+                    led: currentLedData,
+                    servo: currentServoData
+                });
             });
         } 
         else {
-            return res.status(200).json(currentLedData);
+            return res.status(200).json({
+                led: currentLedData,
+                servo: currentServoData
+            });
         }
     }
 }
