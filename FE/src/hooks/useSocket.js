@@ -104,6 +104,15 @@ const useSocket = () => {
     }
   };
 
+  const sendServoControl = async (angle) => {
+    try {
+      const response = await axios.post(`http://localhost:3000/realtime/api/control/servo`, { angle, token });
+      console.log("Servo control response:", response.data);
+    } catch (error) {
+      console.error('Error sending servo control data:', error.response ? error.response.data : error.message);
+    }
+  };
+
   
 
   return { dataSensors, dataDevices, sendControlData };
