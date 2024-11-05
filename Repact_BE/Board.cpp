@@ -2,36 +2,39 @@
 #include <PubSubClient.h>
 #include <DHT.h>
 #include <ArduinoJson.h>
+#include <Servo.h>  // Include the Servo library
 
-// Thông tin WiFi
+// WiFi and MQTT settings
 const char* ssid = "BlueCandle";
 const char* password = "blazingeyes";
 const char* mqtt_server = "192.168.40.102";
-
-// Thông tin MQTT Broker
-
 const int mqtt_port = 1111;
 const char* mqtt_user = "khiem";
 const char* mqtt_password = "123";
 
-// Chân cảm biến
-#define DHTPIN 27      // Chân Data của DHT
-#define DHTTYPE DHT22  // Hoặc DHT22
+// Sensor pins
+#define DHTPIN 27
+#define DHTTYPE DHT22
+#define LDR_PIN_ANALOG 34
+#define LDR_PIN_DIGITAL 35
 
-#define LDR_PIN_ANALOG 34   // Chân analog cho cảm biến ánh sáng
-#define LDR_PIN_DIGITAL 35  // Chân digital cho cảm biến ánh sáng
-
+// LED pins
 #define LED_1_PIN 13
 #define LED_2_PIN 12
 #define LED_3_PIN 14
-
 #define LED_WIFI 2
+
+// Servo pins
+#define SERVO_1_PIN 25
+#define SERVO_2_PIN 26
+#define SERVO_3_PIN 33
 
 DHT dht(DHTPIN, DHTTYPE);
 WiFiClient espClient;
 PubSubClient client(espClient);
+Servo servo1, servo2, servo3;  // Servo objects
 
-// Hàm nhận message từ broker
+// MQTT message handler
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.println(topic);
@@ -39,28 +42,34 @@ void callback(char* topic, byte* payload, unsigned int length) {
   StaticJsonDocument<200> doc;
   deserializeJson(doc, payload, length);
 
-  // Kiểm tra tin nhắn đến từ topic control/led
   if (String(topic) == "control/led") {
-    if (doc.containsKey("1")) {
-      digitalWrite(LED_1_PIN, doc["1"] == 1 ? HIGH : LOW);
-    }
-    if (doc.containsKey("2")) {
-      digitalWrite(LED_2_PIN, doc["2"] == 1 ? HIGH : LOW);
-    }
-    if (doc.containsKey("3")) {
-      digitalWrite(LED_3_PIN, doc["3"] == 1 ? HIGH : LOW);
-    }
+    if (doc.containsKey("1")) digitalWrite(LED_1_PIN, doc["1"] == 1 ? HIGH : LOW);
+    if (doc.containsKey("2")) digitalWrite(LED_2_PIN, doc["2"] == 1 ? HIGH : LOW);
+    if (doc.containsKey("3")) digitalWrite(LED_3_PIN, doc["3"] == 1 ? HIGH : LOW);
+
     doc["1"] = digitalRead(LED_1_PIN);
     doc["2"] = digitalRead(LED_2_PIN);
     doc["3"] = digitalRead(LED_3_PIN);
     char buffer[100];
-
     serializeJson(doc, buffer);
     client.publish("data/led", buffer);
+  } 
+  
+  else if (String(topic) == "control/servo") {
+    if (doc.containsKey("1")) servo1.write(doc["1"]);
+    if (doc.containsKey("2")) servo2.write(doc["2"]);
+    if (doc.containsKey("3")) servo3.write(doc["3"]);
+
+    doc["1"] = servo1.read();
+    doc["2"] = servo2.read();
+    doc["3"] = servo3.read();
+    char buffer[100];
+    serializeJson(doc, buffer);
+    client.publish("data/servo", buffer);
   }
 }
 
-// Hàm kết nối WiFi
+// WiFi setup
 void setup_wifi() {
   delay(10);
   Serial.println();
@@ -79,16 +88,15 @@ void setup_wifi() {
   Serial.println("WiFi connected");
 }
 
-// Hàm kết nối MQTT
+// MQTT connection setup
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP32Client_Khiem", mqtt_user, mqtt_password)) {
-      client.subscribe("control/led");  // Đăng ký topic 'control/led'
-      client.subscribe("control/servo"); 
+      client.subscribe("control/led");
+      client.subscribe("control/servo");
       Serial.println("connected");
 
-      // Gửi data led lần đầu
       client.publish("control/led", "");
       client.publish("control/servo", "");
       return;
@@ -114,15 +122,15 @@ void setup() {
   Serial.begin(115200);
 
   pinMode(LED_WIFI, OUTPUT);
-
   pinMode(LED_1_PIN, OUTPUT);
   pinMode(LED_2_PIN, OUTPUT);
   pinMode(LED_3_PIN, OUTPUT);
 
-  // pinMode(LDR_PIN_DIGITAL, INPUT);
+  servo1.attach(SERVO_1_PIN);
+  servo2.attach(SERVO_2_PIN);
+  servo3.attach(SERVO_3_PIN);
 
   setup_wifi();
-
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
   dht.begin();
@@ -134,20 +142,18 @@ void loop() {
   }
   client.loop();
 
-  // Đọc dữ liệu từ cảm biến DHT
+  // Read DHT sensor data
   float nhiet_do = dht.readTemperature();
   float do_am = dht.readHumidity();
-
-  // Đọc dữ liệu từ cảm biến ánh sáng
   float cuong_do_anh_sang = (4095.00 - analogRead(LDR_PIN_ANALOG)) * 100 / 4095.00;
   int anh_sang = 1 - digitalRead(LDR_PIN_DIGITAL);
 
   StaticJsonDocument<200> doc;
   char buffer[50];
 
-  // Kiểm tra dữ liệu
+  // Check DHT data validity
   if (isnan(nhiet_do) || isnan(do_am)) {
-    Serial.println("Lỗi đọc cảm biến DHT");
+    Serial.println("DHT sensor error");
     digitalWrite(LED_WIFI, HIGH);
     return;
   }
@@ -156,14 +162,13 @@ void loop() {
   doc["l"] = round(cuong_do_anh_sang * 100) / 100.00;
   doc["hasL"] = anh_sang;
 
-  // Gửi dữ liệu qua MQTT
+  // Send sensor data via MQTT
   serializeJson(doc, buffer);
   client.publish("data/sensor", buffer);
-
   Serial.println(buffer);
 
   digitalWrite(LED_WIFI, HIGH);
   delay(100);
   digitalWrite(LED_WIFI, LOW);
-  delay(1900);  // Gửi mỗi 1 giây
+  delay(1900);
 }
