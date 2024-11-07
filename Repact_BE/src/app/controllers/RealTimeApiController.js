@@ -6,6 +6,7 @@
 // const jwt = require('jsonwebtoken');
 // const { Sequelize, Op } = require('sequelize'); // Model
 const { v4: uuidv4 } = require('uuid');
+// const { data, eventEmitter } = require('../services/mqttService');
 const { data, eventEmitter } = require('../services/mqttServiceOLD');
 
 class RealTimeApiController {

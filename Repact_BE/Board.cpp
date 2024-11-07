@@ -5,10 +5,15 @@
 #include <Servo.h>  // Include the Servo library
 
 // WiFi and MQTT settings
-const char* ssid = "BlueCandle";
-const char* password = "blazingeyes";
-const char* mqtt_server = "192.168.40.102";
-const int mqtt_port = 1111;
+// const char* ssid = "BlueCandle";
+// const char* password = "blazingeyes";
+// const char* mqtt_server = "192.168.40.102";
+
+const char* ssid = "Herae";
+const char* password = "khongcopass";
+const char* mqtt_server = "192.168.1.219";
+
+const int mqtt_port = 1883;
 const char* mqtt_user = "khiem";
 const char* mqtt_password = "123";
 

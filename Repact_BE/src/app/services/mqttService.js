@@ -6,6 +6,7 @@ const Device = require('../models/Device');
 const EventEmitter = require('events');
 const eventEmitter = new EventEmitter();
 
+// const mqttClient = require('../../config/mqtt');
 const mqttClient = require('../../config/mqttOLD');
 
 var data = {
@@ -83,7 +84,7 @@ mqttClient.on('message', async (topic, message) => {
             }
             eventEmitter.emit(`data/${requestId}`, deviceData); // Emit for real-time API
         } catch (error) {
-            console.error(`Error updating ${deviceType} status or logging action:`, error);
+            // console.error(`Error updating ${deviceType} status or logging action:`, error);
         }
     }
 
