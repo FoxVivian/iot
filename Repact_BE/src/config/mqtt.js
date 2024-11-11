@@ -11,7 +11,6 @@ const mqttClient = mqtt.connect(mqttBrokerUrl, {
 
 mqttClient.on('connect', () => {
   console.log('Connected to MQTT Broker');
-  
   // Subscribe to sensor data topic
   mqttClient.subscribe('data/sensor', (err) => {
     if (err) {

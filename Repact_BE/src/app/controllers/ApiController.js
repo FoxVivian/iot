@@ -170,6 +170,7 @@ class ApiController {
   // }
   async login(req, res, next) {
     const { username, password } = req.body;
+    console.log("Received username:", username);
 
     try {
       // Corrected query for Mongoose
@@ -191,6 +192,7 @@ class ApiController {
         token,
         message: "Login successfully",
       });
+      console.log("Login successfully")
     } catch (error) {
       next(error);
     }

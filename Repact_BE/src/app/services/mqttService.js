@@ -7,7 +7,7 @@ const EventEmitter = require('events');
 const eventEmitter = new EventEmitter();
 
 // const mqttClient = require('../../config/mqtt');
-const mqttClient = require('../../config/mqttOLD');
+const mqttClient = require('../../config/mqtt');
 
 var data = {
     "data/sensor": null,

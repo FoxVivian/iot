@@ -26,13 +26,13 @@ const ProfilePage = () => {
           style={{ width: '150px', height: '150px', borderRadius: '50%' }}
         />
         <Typography variant="h3" gutterBottom>
-          Nguyễn Việt Khiêm
+          Somebody
         </Typography>
         <Typography variant="subtitle1" color="textSecondary">
-          Mã sinh viên: B21DCCN458
+          Mã sinh viên: B21DCCN184,...
         </Typography>
         <Typography variant="subtitle1" color="textSecondary">
-          Lớp: D21CQCN02-B
+          Lớp: D21CQCN04-B
         </Typography>
         <Typography variant="h6" gutterBottom >
           "hello hehe"
