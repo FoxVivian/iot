@@ -148,8 +148,12 @@ void loop() {
   client.loop();
 
   // Read DHT sensor data
-  float nhiet_do = dht.readTemperature();
-  float do_am = dht.readHumidity();
+  // float nhiet_do = dht.readTemperature();
+  // float do_am = dht.readHumidity();
+
+  float nhiet_do = 37;
+  float do_am = 50;
+
   float cuong_do_anh_sang = (4095.00 - analogRead(LDR_PIN_ANALOG)) * 100 / 4095.00;
   int anh_sang = 1 - digitalRead(LDR_PIN_DIGITAL);
 
