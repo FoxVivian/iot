@@ -240,7 +240,7 @@ const Dashboard = ({ dataSensors, dataDevices, sendControlData }) => {
                 variant="h5"
                 fontWeight="600"
               >
-                LED 1
+                DEVICE 1
               </Typography>
             </Box>
 
@@ -278,7 +278,7 @@ const Dashboard = ({ dataSensors, dataDevices, sendControlData }) => {
                 variant="h5"
                 fontWeight="600"
               >
-                LED 2
+                DEVICE 2
               </Typography>
             </Box>
 
@@ -315,7 +315,7 @@ const Dashboard = ({ dataSensors, dataDevices, sendControlData }) => {
                 variant="h5"
                 fontWeight="600"
               >
-                LED 3
+                DEVICE 3
               </Typography>
             </Box>
 

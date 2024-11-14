@@ -97,16 +97,16 @@ const Sidebar = () => {
               </Box>
               <Box textAlign="center">
                 <Typography
-                  variant="h2"
+                  variant="h1"
                   color={colors.grey[100]}
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  KHIEM NGUYEN
+                  Blue Box
                 </Typography>
-                <Typography variant="h5" color={colors.redAccent[500]}>
+                {/* <Typography variant="h5" color={colors.redAccent[500]}>
                   B21DCCN458
-                </Typography>
+                </Typography> */}
               </Box>
             </Box>
           )}
