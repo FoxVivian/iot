@@ -10,8 +10,8 @@ export const mockDataContacts = [
     msv: "B21DCCN184",
   },
   {
-    id: 1,
-    name: "Nguyen Viet Khiem",
+    id: 2,
+    name: "Ngô Thế Quang Tiến",
     email: "nguyenvietkhiemm@gmail.com",
     age: 21,
     phone: "0919804815",
@@ -20,8 +20,8 @@ export const mockDataContacts = [
     msv: "B21DCCN458",
   },
   {
-    id: 1,
-    name: "Nguyen Viet Khiem",
+    id: 3,
+    name: "Trương Công Tuấn Thành",
     email: "nguyenvietkhiemm@gmail.com",
     age: 21,
     phone: "0919804815",
@@ -30,16 +30,15 @@ export const mockDataContacts = [
     msv: "B21DCCN458",
   },
   {
-    id: 1,
-    name: "Nguyen Viet Khiem",
+    id: 4,
+    name: "Đỗ Đức Hồng Phúc",
     email: "nguyenvietkhiemm@gmail.com",
-    age: 21,
+    age: 22,
     phone: "0919804815",
     github: "https://github.com/nguyenvietkhiemm",
     city: "Ha Noi",
     msv: "B21DCCN458",
   },
-
 
 ];
 
