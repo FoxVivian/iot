@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
 
-const mqttBrokerUrl = 'mqtt://192.168.96.205:1883';
+const mqttBrokerUrl = 'mqtt://192.168.1.68:1883';
 const mqttUser = 'khiem';
 const mqttPassword = '123';
 

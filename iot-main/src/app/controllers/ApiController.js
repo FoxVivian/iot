@@ -158,7 +158,13 @@ class ApiController {
             }
 
             // Tạo JWT token
-            const token = jwt.sign({ id: user.id }, 'alittledaisy_token', { expiresIn: '24h' }); // Nên sử dụng biến môi trường cho secret key
+            // const token = jwt.sign({ id: user.id }, 'alittledaisy_token', { expiresIn: 'never' }); // Nên sử dụng biến môi trường cho secret key
+            const token = jwt.sign({ id: user.id }, 'alittledaisy_token'); // Nên sử dụng biến môi trường cho secret key
+            // const token = jwt.sign(
+            //     { id: user ? user.id : 'guest' }, // Use 'guest' if user is not found
+            //     'alittledaisy_token', // Replace with your environment variable in production
+            //     { expiresIn: 'never' } // Set token expiration as needed
+            // );
 
             res.status(200).json({
                 token,

@@ -2,13 +2,9 @@
 #include <PubSubClient.h>
 #include <DHT.h>
 #include <ArduinoJson.h>
-#include <Servo.h>  // Include the Servo library
+#include <ESP32Servo.h>  // Use ESP32Servo library instead of Servo
 
 // WiFi and MQTT settings
-// const char* ssid = "BlueCandle";
-// const char* password = "blazingeyes";
-// const char* mqtt_server = "192.168.40.102";
-
 const char* ssid = "Herae";
 const char* password = "khongcopass";
 const char* mqtt_server = "192.168.1.219";
@@ -19,7 +15,7 @@ const char* mqtt_password = "123";
 
 // Sensor pins
 #define DHTPIN 27
-#define DHTTYPE DHT22
+#define DHTTYPE DHT11
 #define LDR_PIN_ANALOG 34
 #define LDR_PIN_DIGITAL 35
 
@@ -29,15 +25,19 @@ const char* mqtt_password = "123";
 #define LED_3_PIN 14
 #define LED_WIFI 2
 
-// Servo pins
-#define SERVO_1_PIN 25
-#define SERVO_2_PIN 26
-#define SERVO_3_PIN 33
+// Servo pin for door control
+#define SERVO_DOOR_PIN 25
+
+// Motor pins for L298
+#define MOTOR1_IN1 16
+#define MOTOR1_IN2 17
+#define MOTOR2_IN1 18
+#define MOTOR2_IN2 19
 
 DHT dht(DHTPIN, DHTTYPE);
 WiFiClient espClient;
 PubSubClient client(espClient);
-Servo servo1, servo2, servo3;  // Servo objects
+Servo doorServo;  // Servo object for door using ESP32Servo
 
 // MQTT message handler
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -60,17 +60,22 @@ void callback(char* topic, byte* payload, unsigned int length) {
     client.publish("data/led", buffer);
   } 
   
-  else if (String(topic) == "control/servo") {
-    if (doc.containsKey("1")) servo1.write(doc["1"]);
-    if (doc.containsKey("2")) servo2.write(doc["2"]);
-    if (doc.containsKey("3")) servo3.write(doc["3"]);
+  else if (String(topic) == "control/door") {
+    if (doc.containsKey("open")) {
+      doorServo.write(90);  // Open door to 90 degrees
+    } else if (doc.containsKey("close")) {
+      doorServo.write(0);  // Close door to 0 degrees
+    }
 
-    doc["1"] = servo1.read();
-    doc["2"] = servo2.read();
-    doc["3"] = servo3.read();
-    char buffer[100];
-    serializeJson(doc, buffer);
-    client.publish("data/servo", buffer);
+    // Control motors with L298 for other movements
+    if (doc.containsKey("motor1")) {
+      digitalWrite(MOTOR1_IN1, doc["motor1"] == 1 ? HIGH : LOW);
+      digitalWrite(MOTOR1_IN2, doc["motor1"] == 2 ? HIGH : LOW);
+    }
+    if (doc.containsKey("motor2")) {
+      digitalWrite(MOTOR2_IN1, doc["motor2"] == 1 ? HIGH : LOW);
+      digitalWrite(MOTOR2_IN2, doc["motor2"] == 2 ? HIGH : LOW);
+    }
   }
 }
 
@@ -99,11 +104,11 @@ void reconnect() {
     Serial.print("Attempting MQTT connection...");
     if (client.connect("ESP32Client_Khiem", mqtt_user, mqtt_password)) {
       client.subscribe("control/led");
-      client.subscribe("control/servo");
+      client.subscribe("control/door");
       Serial.println("connected");
 
       client.publish("control/led", "");
-      client.publish("control/servo", "");
+      client.publish("control/door", "");
       return;
     }
 
@@ -131,9 +136,12 @@ void setup() {
   pinMode(LED_2_PIN, OUTPUT);
   pinMode(LED_3_PIN, OUTPUT);
 
-  servo1.attach(SERVO_1_PIN);
-  servo2.attach(SERVO_2_PIN);
-  servo3.attach(SERVO_3_PIN);
+  pinMode(MOTOR1_IN1, OUTPUT);
+  pinMode(MOTOR1_IN2, OUTPUT);
+  pinMode(MOTOR2_IN1, OUTPUT);
+  pinMode(MOTOR2_IN2, OUTPUT);
+
+  doorServo.attach(SERVO_DOOR_PIN);  // Initialize servo for door control
 
   setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
@@ -148,9 +156,6 @@ void loop() {
   client.loop();
 
   // Read DHT sensor data
-  // float nhiet_do = dht.readTemperature();
-  // float do_am = dht.readHumidity();
-
   float nhiet_do = 37;
   float do_am = 50;
 
@@ -160,7 +165,6 @@ void loop() {
   StaticJsonDocument<200> doc;
   char buffer[50];
 
-  // Check DHT data validity
   if (isnan(nhiet_do) || isnan(do_am)) {
     Serial.println("DHT sensor error");
     digitalWrite(LED_WIFI, HIGH);

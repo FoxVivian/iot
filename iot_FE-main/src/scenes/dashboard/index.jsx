@@ -20,7 +20,9 @@ import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
 import { useState, useEffect } from 'react';
 
-const Dashboard = ({ dataSensors, dataDevices, sendControlData }) => {
+
+const Dashboard = ({ dataSensors = {}, dataDevices = {}, sendControlData }) => {
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [loading, setLoading] = useState({ "1": false, "2": false, "3": false });
@@ -240,7 +242,7 @@ const Dashboard = ({ dataSensors, dataDevices, sendControlData }) => {
                 variant="h5"
                 fontWeight="600"
               >
-                DEVICE 1
+                LED 1
               </Typography>
             </Box>
 
@@ -278,7 +280,7 @@ const Dashboard = ({ dataSensors, dataDevices, sendControlData }) => {
                 variant="h5"
                 fontWeight="600"
               >
-                DEVICE 2
+                LED 2
               </Typography>
             </Box>
 
@@ -315,7 +317,7 @@ const Dashboard = ({ dataSensors, dataDevices, sendControlData }) => {
                 variant="h5"
                 fontWeight="600"
               >
-                DEVICE 3
+                LED 3
               </Typography>
             </Box>
 

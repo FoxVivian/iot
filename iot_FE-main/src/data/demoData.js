@@ -17,7 +17,7 @@ export const mockDataContacts = [
     phone: "0919804815",
     github: "https://github.com/nguyenvietkhiemm",
     city: "Ha Noi",
-    msv: "B21DCCN458",
+    msv: "B21DCCN705",
   },
   {
     id: 3,
@@ -27,7 +27,7 @@ export const mockDataContacts = [
     phone: "0919804815",
     github: "https://github.com/nguyenvietkhiemm",
     city: "Ha Noi",
-    msv: "B21DCCN458",
+    msv: "B21DCCN681",
   },
   {
     id: 4,
@@ -37,7 +37,7 @@ export const mockDataContacts = [
     phone: "0919804815",
     github: "https://github.com/nguyenvietkhiemm",
     city: "Ha Noi",
-    msv: "B21DCCN458",
+    msv: "B20DCCN505",
   },
 
 ];

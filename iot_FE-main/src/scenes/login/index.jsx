@@ -10,7 +10,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3000/api/login', { username, password });
+            const response = await axios.post('http://localhost:5000/api/login', { username, password });
             const token = response.data.token;
 
             // Lưu token vào localStorage
