@@ -1,3 +1,5 @@
+// const char *mqtt_user = "khiem";
+// const char *mqtt_password = "123";
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <DHT.h>
@@ -9,8 +11,8 @@ const char *ssid = "BlueCandle";
 const char *password = "blazingeyes";
 const char *mqtt_server = "192.168.96.205";
 const int mqtt_port = 1883;
-const char *mqtt_user = "khiem";
-const char *mqtt_password = "123";
+const char *mqtt_user = "cong";
+const char *mqtt_password = "184";
 
 // Sensor pins
 #define DHTPIN 27
@@ -19,24 +21,19 @@ const char *mqtt_password = "123";
 #define LDR_PIN_DIGITAL 35
 
 // LED pins
+#define LED_WIFI 2
 #define LED_1_PIN 13
 #define LED_2_PIN 12
 #define LED_3_PIN 14
-
-#define LED_WIFI 2
 
 // #define CONTACT_PIN 33
 
 // Servo pin for door control
 #define SERVO_DOOR_PIN 25
 
-#define ENA 21 // Motor A speed control
-#define IN1 23 // Motor A direction
+#define ENA 21 // Motor speed control
+#define IN1 23 // Motor direction
 #define IN2 22
-
-#define ENB 19 // Motor B speed control
-#define IN3 18 // Motor B direction
-#define IN4 17
 
 int isOpen = 0;
 
@@ -44,7 +41,7 @@ DHT dht(DHTPIN, DHTTYPE);
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-Servo testServo;
+Servo doorServo;
 
 int doorStat = 0;
 
@@ -52,47 +49,29 @@ void OpenServo()
 {
     if (doorStat == 0)
     {
-        testServo.attach(SERVO_DOOR_PIN);
-        testServo.write(0);
-        Serial.println("Servo at 0 degrees");
+        doorServo.attach(SERVO_DOOR_PIN);
+        doorServo.write(0);
+        Serial.println("Door opened!!!");
         delay(175);
-        testServo.detach();
+        doorServo.detach();
         doorStat = 1;
     }
-
-    // testServo.write(90);
-    // Serial.println("Servo at 90 degrees");
-    // delay(1000);
-
-    // testServo.write(180);
-    // Serial.println("Servo at 180 degrees");
-    // delay(1000);
 }
 
 void CloseServo()
 {
     if (doorStat == 1)
     {
-        testServo.attach(SERVO_DOOR_PIN);
-        testServo.write(180);
-        Serial.println("Servo at 0 degrees");
+        doorServo.attach(SERVO_DOOR_PIN);
+        doorServo.write(180);
+        Serial.println("Door Closed!!!");
         delay(175);
-        testServo.detach();
+        doorServo.detach();
         doorStat = 0;
     }
-
-    // testServo.write(90);
-    // Serial.println("Servo at 90 degrees");
-    // delay(1000);
-
-    // testServo.write(180);
-    // Serial.println("Servo at 180 degrees");
-    // delay(1000);
 }
 void moveCurtainsOpen()
 {
-    // Start both motors
-    // Motor A
     if (isOpen == 0)
     {
         digitalWrite(IN1, HIGH);
@@ -104,14 +83,9 @@ void moveCurtainsOpen()
         analogWrite(ENA, 0);
     }
     isOpen = 1;
-    // Motor B
-    // digitalWrite(IN3, HIGH);
-    // digitalWrite(IN4, LOW);
-    // analogWrite(ENB, 128); // 50% speed
 }
 void moveCurtainsClose()
 {
-    // Stop both motors
     if (isOpen == 1)
     {
         digitalWrite(IN1, LOW);
@@ -123,9 +97,6 @@ void moveCurtainsClose()
         analogWrite(ENA, 0);
     }
     isOpen = 0;
-    // digitalWrite(IN3, LOW);
-    // digitalWrite(IN4, LOW);
-    // analogWrite(ENB, 0);
 }
 void detatching()
 {
