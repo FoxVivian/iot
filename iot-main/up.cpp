@@ -70,6 +70,7 @@ void CloseServo()
         doorStat = 0;
     }
 }
+
 void moveCurtainsOpen()
 {
     if (isOpen == 0)
@@ -119,6 +120,7 @@ void callback(char *topic, byte *payload, unsigned int length)
         {
             if (doc["1"] == 1)
             {
+
                 OpenServo();
             }
             else
